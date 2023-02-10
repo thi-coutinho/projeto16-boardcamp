@@ -17,3 +17,33 @@ export async function createRental(req, res) {
         res.status(500).send(error.message)
     }
 }
+
+export async function listRentals(req, res) {
+    try {
+        const queryCustomersList = await db.query('SELECT * FROM customers;')
+        const queryGamesList = await db.query('SELECT * FROM games;')
+        const queryRentalsList = await db.query('SELECT * FROM rentals;')
+        const finalList = queryRentalsList.rows.map(rental => {
+
+            return {
+                ...rental,
+                customer: {
+                    id: rental.customerId,
+                    name:queryCustomersList.rows.find(c => c.id===rental.customerId).name
+                },
+                game:{
+                    id:rental.gameId,
+                    name: queryGamesList.rows.find(c => c.id===rental.customerId).name
+                } 
+            }
+        }
+        )
+
+        res.send(finalList)
+
+    } catch (error) {
+        res.status(500).send(error.message)
+
+    }
+
+}
