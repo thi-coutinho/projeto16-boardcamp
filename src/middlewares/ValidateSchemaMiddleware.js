@@ -4,7 +4,7 @@ export function ValidateSchema(schema) {
         
         if (error) {
             const errorMessage = error.details.map((err) => err.message);
-            return res.status(422).send(errorMessage);
+            return res.status(400).send(errorMessage);
         }
         next();
     };
