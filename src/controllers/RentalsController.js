@@ -58,13 +58,22 @@ export async function returnRental (req,res) {
             'SELECT rentals.id, rentals."rentDate", rentals."daysRented", games."pricePerDay" FROM rentals \
             JOIN games on rentals."gameId" = games.id\
             WHERE rentals.id = $1;',[id])
-        console.log(rentalQuery.rows[0])
         const {rentDate,daysRented,pricePerDay} = rentalQuery.rows[0] 
         const dateRented = new Date(rentDate);
         const diffTime = Math.abs(date - dateRented);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
         const fee = diffDays-daysRented >0? (diffDays-daysRented)*(pricePerDay) : 0
         await db.query('UPDATE rentals SET "returnDate" = $1, "delayFee" = $2  WHERE id = $3;',[date,fee,id])
+        res.sendStatus(200)
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+}
+
+export async function deleteRental(req,res){
+    const {id} = req.params
+    try {
+        await db.query("DELETE FROM rentals WHERE id = $1;",[id])
         res.sendStatus(200)
     } catch (error) {
         res.status(500).send(error.message)
