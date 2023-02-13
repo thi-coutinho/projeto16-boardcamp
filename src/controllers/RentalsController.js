@@ -52,7 +52,6 @@ export async function returnRental (req,res) {
     const {id} = req.params
 
     const date = new Date()
-    console.log(date)
     try {
         const rentalQuery = await db.query(
             'SELECT rentals.id, rentals."rentDate", rentals."daysRented", games."pricePerDay" FROM rentals \
